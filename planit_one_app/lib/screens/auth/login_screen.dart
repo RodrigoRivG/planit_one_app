@@ -20,7 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final url = Uri.parse('http://10.0.2.2:8000/api/token/');
+      final url = Uri.parse(
+        'https://web-production-cf32.up.railway.app/api/token/',
+      );
 
       print('Username: ${usernameController.text.trim()}');
       print('Password: ${passwordController.text.trim()}');

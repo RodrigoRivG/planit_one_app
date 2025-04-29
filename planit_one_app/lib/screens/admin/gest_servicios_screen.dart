@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:planit_one_app/screens/admin/servicios_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class GestionarServiciosScreen extends StatefulWidget {
   const GestionarServiciosScreen({super.key});
@@ -10,24 +13,48 @@ class GestionarServiciosScreen extends StatefulWidget {
 }
 
 class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
-  final List<Map<String, String>> _servicios = [
-    {
-      'nombre': 'Servicio de Catering',
-      'descripcion': 'Catering Gourmet para Eventos Corporativos',
-      'precio': '\$50.00',
-      'unidad': 'Por Persona',
-      'duracion': '180 minutos',
-      'proveedor': 'Delicias Gourmet Catering',
-    },
-    {
-      'nombre': 'Servicio de Música en Vivo',
-      'descripcion': 'Conjunto Acústico para Recepciones',
-      'precio': '\$1200.00',
-      'unidad': 'Por Evento',
-      'duracion': '120 minutos',
-      'proveedor': 'Sonidos del Alma',
-    },
-  ];
+  List<Map<String, dynamic>> _servicios = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarServicios();
+  }
+
+  Future<void> _cargarServicios() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token') ?? '';
+
+      final url = Uri.parse('https://web-production-cf32.up.railway.app/api/services/');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+
+        setState(() {
+          _servicios = data.map((item) => {
+            'nombre': item['name'] ?? '',
+            'descripcion': item['description'] ?? '',
+            'precio': '\$${item['base_price'] ?? '0.00'}',
+            'unidad': item['unit_measure'] ?? '',
+            'duracion': '${item['standard_duration'] ?? '0'} minutos',
+            'proveedor': item['provider'] ?? '',
+          }).toList();
+        });
+      } else {
+        print('Error al cargar servicios: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+    }
+  }
 
   void _newService() {
     Navigator.push(
@@ -50,6 +77,7 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue[400],
         title: const Text('Servicios'),
         actions: [
           IconButton(
@@ -76,7 +104,7 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
     );
   }
 
-  Column _listCard(Map<String, String> servicio, int index) {
+  Column _listCard(Map<String, dynamic> servicio, int index) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

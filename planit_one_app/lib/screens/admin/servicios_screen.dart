@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class ServiciosScreen extends StatefulWidget {
   const ServiciosScreen({super.key});
@@ -19,7 +22,7 @@ class _ServiciosScreenState extends State<ServiciosScreen> {
 
   String? _unidadMedidaSeleccionada;
 
-  final List<String> _unidadesDeMedida = ['Por Evento', 'Por Hora', 'Por Persona', 'Por Día', 'Por Unidad']; 
+  final List<String> _unidadesDeMedida = ['event', 'hour', 'person', 'day', 'unit']; 
 
   @override
   void dispose() {
@@ -31,9 +34,47 @@ class _ServiciosScreenState extends State<ServiciosScreen> {
     super.dispose();
   }
 
-  void _guardarServicio() {
+  void _guardarServicio() async {
     if (_formKey.currentState!.validate()) {
-      //Llamamos a la API
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('access_token') ?? '';
+
+        final url = Uri.parse('https://web-production-cf32.up.railway.app/api/services/');
+
+        final response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode({
+            'name': _nombreController.text.trim(),
+            'description': _descripcionController.text.trim(),
+            'base_price': double.tryParse(_precioBaseController.text.trim()) ?? 0.0,
+            'unit_measure': _unidadMedidaSeleccionada ?? 'Por Evento', // Asegúrate de manejar unidad seleccionada
+            'standard_duration': int.tryParse(_duracionController.text.trim()) ?? 0,
+            'provider': _proveedorController.text.trim(),
+          }),
+        );
+
+        if (response.statusCode == 201) {
+          // Éxito
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Servicio creado exitosamente')),
+          );
+          Navigator.pop(context); // Volver a la pantalla anterior
+        } else {
+          //print('Error al crear servicio: ${response.statusCode}');
+          print('Respuesta: ${response.body}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al crear servicio: ${response.statusCode}')),
+          );
+        }
+        
+      } catch (e) {
+        print('Error de conexión: $e');
+      }
     }
   }
 
