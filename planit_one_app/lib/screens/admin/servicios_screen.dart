@@ -95,17 +95,17 @@ class _ServiciosScreenState extends State<ServiciosScreen> {
           key: _formKey,
           child: Column(
             children: [
-              _NombreTextFormField(nombreController: _nombreController),
+              _CustomTextFormField(controller: _nombreController, label: 'Nombre *'),
               const SizedBox(height: 16),
-              _DescripcionTextFormField(descripcionController: _descripcionController),
+              _CustomTextFormField(controller: _descripcionController, label: 'Descripción'),
               const SizedBox(height: 16),
-              _PrecioTextFormField(precioBaseController: _precioBaseController),
+              _CustomTextFormField(controller: _precioBaseController, label: 'Precio base *', keyboardType: TextInputType.number),
               const SizedBox(height: 16),
               _unidadDeMedida(),
               const SizedBox(height: 16),
-              _DuracionTextFormField(duracionController: _duracionController),
+              _CustomTextFormField(controller: _duracionController, label: 'Duración estandar (minutos)', keyboardType: TextInputType.number),
               const SizedBox(height: 16),  
-              _ProveedorTextFormField(proveedorController: _proveedorController),
+              _CustomTextFormField(controller: _proveedorController, label: 'Proveedor'),
               const SizedBox(height: 24),
               _botones(),
             ],
@@ -168,93 +168,24 @@ class _ServiciosScreenState extends State<ServiciosScreen> {
   }
 }
 
-class _ProveedorTextFormField extends StatelessWidget {
-  const _ProveedorTextFormField({
-    //super.key,
-    required TextEditingController proveedorController,
-  }) : _proveedorController = proveedorController;
+//---------------------------------------------------------
+class _CustomTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final TextInputType keyboardType;
 
-  final TextEditingController _proveedorController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _proveedorController,
-      decoration: const InputDecoration(labelText: 'Proveedor'),
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _DuracionTextFormField extends StatelessWidget {
-  const _DuracionTextFormField({
-    //super.key,
-    required TextEditingController duracionController,
-  }) : _duracionController = duracionController;
-
-  final TextEditingController _duracionController;
+  const _CustomTextFormField({
+    required this.controller,
+    required this.label,
+    this.keyboardType = TextInputType.text,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _duracionController,
-      decoration: const InputDecoration(labelText: 'Duración estandar (minutos)'),
-      keyboardType: TextInputType.number,
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _PrecioTextFormField extends StatelessWidget {
-  const _PrecioTextFormField({
-    //super.key,
-    required TextEditingController precioBaseController,
-  }) : _precioBaseController = precioBaseController;
-
-  final TextEditingController _precioBaseController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _precioBaseController,
-      decoration: const InputDecoration(labelText: 'Precio base *'),
-      keyboardType: TextInputType.number,
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _DescripcionTextFormField extends StatelessWidget {
-  const _DescripcionTextFormField({
-    //super.key,
-    required TextEditingController descripcionController,
-  }) : _descripcionController = descripcionController;
-
-  final TextEditingController _descripcionController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _descripcionController,
-      decoration: const InputDecoration(labelText: 'Descripción'),
-      maxLines: 2,
-    );
-  }
-}
-
-class _NombreTextFormField extends StatelessWidget {
-  const _NombreTextFormField({
-    //super.key,
-    required TextEditingController nombreController,
-  }) : _nombreController = nombreController;
-
-  final TextEditingController _nombreController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _nombreController,
-      decoration: const InputDecoration(labelText: 'Nombre *'),
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(labelText: label),
       validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
     );
   }

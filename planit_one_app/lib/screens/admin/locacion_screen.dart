@@ -69,29 +69,29 @@ class _LocacionScreenState extends State<LocacionScreen> {
           key: _formKey,
           child: Column(
             children: [
-              _NameLocation(nameLocationController: _nameLocationController),
+              _CustomTextFormField(controller: _nameLocationController, label: 'Locación'),
               const SizedBox(height: 16),
-              _Description(descriptionController: _descriptionController),
+              _CustomTextFormField(controller: _descriptionController, label: 'Descripción'),
               const SizedBox(height: 16),
-              _Address(addressController: _addressController),
+              _CustomTextFormField(controller: _addressController, label: 'Dirección'),
               const SizedBox(height: 16),
-              _Capacity(capacityController: _capacityController),
+              _CustomTextFormField(controller: _capacityController, label: 'Capacidad de personas', keyboardType: TextInputType.number),
               const SizedBox(height: 16),
               _locationType(),
               const SizedBox(height: 16),
-              _RentalPrice(rentalPriceController: _rentalPriceController),
+              _CustomTextFormField(controller: _rentalPriceController, label: 'Precio del alquiler', keyboardType: TextInputType.number),
               const SizedBox(height: 16),
               _priceUnit(),
               const SizedBox(height: 16),
-              _Area(areaController: _areaController),
+              _CustomTextFormField(controller: _areaController, label: 'Área (m2)', keyboardType: TextInputType.number),
               const SizedBox(height: 16),
-              _ParkingSpace(parkingSpaceController: _parkingSpaceController),
+              _CustomTextFormField(controller: _parkingSpaceController, label: 'Estacionamiento (vehículos)', keyboardType: TextInputType.number),
               const SizedBox(height: 16),
               _environmentType(),
               const SizedBox(height: 16),
-              _ExtraHourCost(extraHourCostController: _extraHourCostController),
+              _CustomTextFormField(controller: _extraHourCostController, label: 'Costo por horas extras', keyboardType: TextInputType.number),
               const SizedBox(height: 16),
-              _Provider(providerController: _providerController),
+              _CustomTextFormField(controller: _providerController, label: 'Proveedor asociado'),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _setLocation,
@@ -158,170 +158,24 @@ class _LocacionScreenState extends State<LocacionScreen> {
   }
 }
 
-class _Provider extends StatelessWidget {
-  const _Provider({
-    //super.key,
-    required TextEditingController providerController,
-  }) : _providerController = providerController;
+//---------------------------------------------------
+class _CustomTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final TextInputType keyboardType;
 
-  final TextEditingController _providerController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _providerController,
-      decoration: const InputDecoration(labelText: 'Proveedor asociado'),
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _ExtraHourCost extends StatelessWidget {
-  const _ExtraHourCost({
-    //super.key,
-    required TextEditingController extraHourCostController,
-  }) : _extraHourCostController = extraHourCostController;
-
-  final TextEditingController _extraHourCostController;
+  const _CustomTextFormField({
+    required this.controller,
+    required this.label,
+    this.keyboardType = TextInputType.text,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _extraHourCostController,
-      decoration: const InputDecoration(labelText: 'Costo por horas extras'),
-      keyboardType: TextInputType.number,
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _ParkingSpace extends StatelessWidget {
-  const _ParkingSpace({
-    //super.key,
-    required TextEditingController parkingSpaceController,
-  }) : _parkingSpaceController = parkingSpaceController;
-
-  final TextEditingController _parkingSpaceController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _parkingSpaceController,
-      decoration: const InputDecoration(
-        labelText: 'Estacionamiento (vehículos)',
-      ),
-      keyboardType: TextInputType.number,
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _Area extends StatelessWidget {
-  const _Area({
-    //super.key, 
-    required TextEditingController areaController
-  }) : _areaController = areaController;
-
-  final TextEditingController _areaController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _areaController,
-      decoration: const InputDecoration(labelText: 'Área (m2)'),
-      keyboardType: TextInputType.number,
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _RentalPrice extends StatelessWidget {
-  const _RentalPrice({
-    //super.key,
-    required TextEditingController rentalPriceController,
-  }) : _rentalPriceController = rentalPriceController;
-
-  final TextEditingController _rentalPriceController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _rentalPriceController,
-      decoration: const InputDecoration(labelText: 'Precio de alquiler'),
-      keyboardType: TextInputType.number,
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _Capacity extends StatelessWidget {
-  const _Capacity({
-    //super.key,
-    required TextEditingController capacityController,
-  }) : _capacityController = capacityController;
-
-  final TextEditingController _capacityController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _capacityController,
-      keyboardType: TextInputType.number,
-      decoration: const InputDecoration(labelText: 'Capacidad de personas'),
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _Address extends StatelessWidget {
-  const _Address({
-    //super.key, 
-    required TextEditingController addressController
-  }) : _addressController = addressController;
-
-  final TextEditingController _addressController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _addressController,
-      decoration: const InputDecoration(labelText: 'Dirección'),
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _Description extends StatelessWidget {
-  const _Description({
-    //super.key,
-    required TextEditingController descriptionController,
-  }) : _descriptionController = descriptionController;
-
-  final TextEditingController _descriptionController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _descriptionController,
-      decoration: const InputDecoration(labelText: 'Descripción'),
-      validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-    );
-  }
-}
-
-class _NameLocation extends StatelessWidget {
-  const _NameLocation({
-    //super.key,
-    required TextEditingController nameLocationController,
-  }) : _nameLocationController = nameLocationController;
-
-  final TextEditingController _nameLocationController;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _nameLocationController,
-      decoration: const InputDecoration(labelText: 'Locación'),
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(labelText: label),
       validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
     );
   }
