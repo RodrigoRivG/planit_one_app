@@ -52,7 +52,7 @@ class _LocacionScreenState extends State<LocacionScreen> {
 
   void _setLocation() {
     if (_formKey.currentState!.validate()) {
-      // quiero la API, servidor a la nube aaaaaa
+      // quiero la API, servidor a la nube gaaaaaa
     }
   }
 
