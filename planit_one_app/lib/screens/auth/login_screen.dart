@@ -21,7 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final url = Uri.parse(
-        'https://web-production-cf32.up.railway.app/api/token/',
+        // 'https://web-production-cf32.up.railway.app/api/token/',
+        'http://192.168.100.23:8000/api/token/',
       );
 
       print('Username: ${usernameController.text.trim()}');

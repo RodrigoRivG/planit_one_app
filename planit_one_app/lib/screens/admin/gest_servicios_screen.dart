@@ -26,7 +26,8 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token') ?? '';
 
-      final url = Uri.parse('https://web-production-cf32.up.railway.app/api/services/');
+      // final url = Uri.parse('https://web-production-cf32.up.railway.app/api/services/');
+      final url = Uri.parse('http://192.168.100.23:8000/api/services/');
       final response = await http.get(
         url,
         headers: {
