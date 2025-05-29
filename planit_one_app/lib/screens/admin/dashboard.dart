@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:planit_one_app/screens/admin/gest_servicios_screen.dart';
 import 'package:planit_one_app/screens/admin/locacion_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:planit_one_app/screens/admin/paquetes/paquetes_list_screen.dart';
 import '../auth/login_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -12,7 +13,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
   // aqui copio lo de Erik
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -31,14 +31,15 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.blue[400],
         title: const Text('Panel de Administrador'),
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ), 
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Icons.logout),
             onPressed: () => logout(context),
             tooltip: 'Cerra sesión',
           ),
@@ -51,37 +52,57 @@ class _DashboardState extends State<Dashboard> {
             padding: EdgeInsets.zero,
             children: [
               const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
+                decoration: BoxDecoration(color: Colors.blue),
                 child: Text(
                   'Administrador',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 24),
                 ),
               ),
               ListTile(
                 // Gestionar Servicios
-                leading: const Icon(Icons.build, color: Colors.white,),
-                title: const Text('Gestionar Servicios', style: TextStyle(color: Colors.white),),
+                leading: const Icon(Icons.build, color: Colors.white),
+                title: const Text(
+                  'Gestionar Servicios',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   // Gestionar Servicios
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const GestionarServiciosScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const GestionarServiciosScreen(),
+                    ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.location_on, color: Colors.white,),
-                title: const Text('Gestionar Locaciones', style: TextStyle(color: Colors.white),),
+                leading: const Icon(Icons.location_on, color: Colors.white),
+                title: const Text(
+                  'Gestionar Locaciones',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
-                  // Gestionar locacion 
+                  // Gestionar locacion
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LocacionScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const LocacionScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.inventory, color: Colors.white),
+                title: Text(
+                  'Getionar Paquetes',
+                 style: TextStyle(color: Colors.white),
+                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaquetesListScreen(),
+                    ),
                   );
                 },
               ),
@@ -90,10 +111,7 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
       body: const Center(
-        child: Text(
-          'Bienvenido al Dashboard',
-          style: TextStyle(fontSize: 20),
-        ),
+        child: Text('Bienvenido al Dashboard', style: TextStyle(fontSize: 20)),
       ),
     );
   }
