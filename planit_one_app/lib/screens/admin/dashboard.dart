@@ -4,6 +4,7 @@ import 'package:planit_one_app/screens/admin/locacion_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:planit_one_app/screens/admin/paquetes/paquetes_list_screen.dart';
 import '../auth/login_screen.dart';
+import 'package:planit_one_app/screens/admin/agenda_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -103,6 +104,16 @@ class _DashboardState extends State<Dashboard> {
                     MaterialPageRoute(
                       builder: (context) => PaquetesListScreen(),
                     ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.event, color: Colors.white),
+                title: const Text('Agenda de Eventos', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AgendaScreen()),
                   );
                 },
               ),
