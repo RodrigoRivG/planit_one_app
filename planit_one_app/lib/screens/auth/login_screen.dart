@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home_screen.dart';
 import '../admin/dashboard.dart';
+import 'package:planit_one_app/services/api_service.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final url = Uri.parse(
-        'https://web-production-00f1e.up.railway.app/api/token/',
+        '${baseUrl}token/',
       );
 
       print('Username: ${usernameController.text.trim()}');

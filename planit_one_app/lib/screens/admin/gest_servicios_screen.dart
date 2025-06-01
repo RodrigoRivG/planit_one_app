@@ -1,3 +1,6 @@
+//admin/gest_servicios_screen.dart
+import 'dart:developer';
+import 'package:planit_one_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:planit_one_app/screens/admin/servicios_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +29,8 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token') ?? '';
 
-      final url = Uri.parse('https://web-production-cf32.up.railway.app/api/services/');
+      // final url = Uri.parse('https://web-production-cf32.up.railway.app/services/');
+      final url = Uri.parse('${baseUrl}services/');
       final response = await http.get(
         url,
         headers: {
@@ -40,6 +44,7 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
 
         setState(() {
           _servicios = data.map((item) => {
+            'id': item['id'],
             'nombre': item['name'] ?? '',
             'descripcion': item['description'] ?? '',
             'precio': '\$${item['base_price'] ?? '0.00'}',
@@ -67,10 +72,72 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
     // ?
   }
 
-  void _deleteService(int index) {
-    setState(() {
-      _servicios.removeAt(index);
-    });
+
+  Future<void> _eliminarService(int serviceId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token') ?? '';
+
+      final url = Uri.parse('${baseUrl}services/$serviceId/');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Servicio eliminado correctamente')),
+        );
+        _cargarServicios();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al eliminar el servicio: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error de conexión: $e')),
+      );
+    }
+  }
+
+  Future<void> _confirmarEliminar(int serviceId, String nombre) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar eliminación'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('¿Estás seguro de eliminar el servicio "$nombre"?'),
+                const Text('Esta acción no se puede deshacer.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _eliminarService(serviceId);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -123,22 +190,22 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
         const SizedBox(height: 8),
         Text('Proveedor: ${servicio['proveedor']}'),
         const SizedBox(height: 12),
-        _botones(index),
+        _botones(servicio),
       ],
     );
   }
 
-  Row _botones(int index) {
+  Row _botones(Map<String, dynamic> servicio) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
-          onPressed: () => _editService(index),
+          onPressed: () => _editService(servicio['id']),
           child: const Text('EDITAR'),
         ),
         const SizedBox(width: 8),
         TextButton(
-          onPressed: () => _deleteService(index),
+          onPressed: () => _confirmarEliminar(servicio['id'], servicio['nombre']),
           child: const Text('ELIMINAR', style: TextStyle(color: Colors.red)),
         ),
       ],

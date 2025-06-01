@@ -1,6 +1,8 @@
+//admin/servicios_screen.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:planit_one_app/services/api_service.dart';
 import 'dart:convert';
 
 class ServiciosScreen extends StatefulWidget {
@@ -39,8 +41,8 @@ class _ServiciosScreenState extends State<ServiciosScreen> {
       try {
         final prefs = await SharedPreferences.getInstance();
         final token = prefs.getString('access_token') ?? '';
-
-        final url = Uri.parse('https://web-production-cf32.up.railway.app/api/services/');
+        // final url = Uri.parse('https://web-production-cf32.up.railway.app/services/');
+        final url = Uri.parse('${baseUrl}services/');
 
         final response = await http.post(
           url,
