@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:planit_one_app/screens/admin/gest_servicios_screen.dart';
+import 'package:planit_one_app/screens/admin/servicios/gest_servicios_screen.dart';
 import 'package:planit_one_app/screens/admin/locacion_screen.dart';
+import 'package:planit_one_app/screens/admin/tareas/tasks_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:planit_one_app/screens/admin/paquetes/paquetes_list_screen.dart';
 import '../auth/login_screen.dart';
@@ -118,6 +119,7 @@ class _DashboardState extends State<Dashboard> {
                   );
                 },
               ),
+
               ListTile(
                 leading: const Icon(Icons.event_available, color: Colors.white),
                 title: const Text('Gestionar Eventos', style: TextStyle(color: Colors.white)),
@@ -125,6 +127,18 @@ class _DashboardState extends State<Dashboard> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => EventsScreen()),
+                  );
+                }
+              ),
+  
+              ListTile(
+                leading: const Icon(Icons.task, color: Colors.white),
+                title: const Text('Tareas', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TasksListScreen()),
+
                   );
                 },
               ),

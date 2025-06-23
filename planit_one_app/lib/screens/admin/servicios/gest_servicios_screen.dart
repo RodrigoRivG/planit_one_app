@@ -1,8 +1,8 @@
 //admin/gest_servicios_screen.dart
-import 'dart:developer';
+// import 'dart:developer';
 import 'package:planit_one_app/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:planit_one_app/screens/admin/servicios_screen.dart';
+import 'package:planit_one_app/screens/admin/servicios/form_servicios_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,7 +29,6 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token') ?? '';
 
-      // final url = Uri.parse('https://web-production-cf32.up.railway.app/services/');
       final url = Uri.parse('${baseUrl}services/');
       final response = await http.get(
         url,
@@ -43,15 +42,30 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
         final List<dynamic> data = json.decode(response.body);
 
         setState(() {
-          _servicios = data.map((item) => {
-            'id': item['id'],
-            'nombre': item['name'] ?? '',
-            'descripcion': item['description'] ?? '',
-            'precio': '\$${item['base_price'] ?? '0.00'}',
-            'unidad': item['unit_measure'] ?? '',
-            'duracion': '${item['standard_duration'] ?? '0'} minutos',
-            'proveedor': item['provider'] ?? '',
-          }).toList();
+          _servicios =
+              data
+                  .map(
+                    (item) => {
+                      // Mantén todos los datos originales para editar
+                      'id': item['id'],
+                      'name': item['name'] ?? '',
+                      'description': item['description'] ?? '',
+                      'base_price': item['base_price'],
+                      'unit_measure': item['unit_measure'] ?? '',
+                      'standard_duration': item['standard_duration'],
+                      'provider': item['provider'],
+                      // Datos para mostrar en la UI
+                      'nombre': item['name'] ?? '',
+                      'descripcion': item['description'] ?? '',
+                      'precio': '\$${item['base_price'] ?? '0.00'}',
+                      'unidad': item['unit_measure'] ?? '',
+                      'duracion': '${item['standard_duration'] ?? '0'} minutos',
+                      'proveedor':
+                          item['provider_detail']?['commercial_name'] ??
+                          'Sin proveedor', // Cambiar por commercial_name
+                    },
+                  )
+                  .toList();
         });
       } else {
         print('Error al cargar servicios: ${response.statusCode}');
@@ -61,17 +75,31 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
     }
   }
 
-  void _newService() {
-    Navigator.push(
+  void _newService() async {
+    final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ServiciosScreen()),
+      MaterialPageRoute(builder: (context) => const ServiciosScreen()),
     );
+
+    // Si se guardó correctamente, recargar la lista
+    if (result == true) {
+      _cargarServicios();
+    }
   }
 
-  void _editService(int index) {
-    // ?
-  }
+  void _editService(Map<String, dynamic> servicio) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiciosScreen(servicio: servicio),
+      ),
+    );
 
+    // Si se guardó correctamente, recargar la lista
+    if (result == true) {
+      _cargarServicios();
+    }
+  }
 
   Future<void> _eliminarService(int serviceId) async {
     try {
@@ -94,14 +122,18 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
         _cargarServicios();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al eliminar el servicio: ${response.statusCode}')),
+          SnackBar(
+            content: Text(
+              'Error al eliminar el servicio: ${response.statusCode}',
+            ),
+          ),
         );
       }
     } catch (e) {
       print('Error de conexión: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de conexión: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error de conexión: $e')));
     }
   }
 
@@ -128,7 +160,10 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
               },
             ),
             TextButton(
-              child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+              child: const Text(
+                'Eliminar',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 _eliminarService(serviceId);
@@ -200,12 +235,16 @@ class _GestionarServiciosScreenState extends State<GestionarServiciosScreen> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
-          onPressed: () => _editService(servicio['id']),
+          onPressed:
+              () => _editService(
+                servicio,
+              ), // Cambiar de servicio['id'] a servicio
           child: const Text('EDITAR'),
         ),
         const SizedBox(width: 8),
         TextButton(
-          onPressed: () => _confirmarEliminar(servicio['id'], servicio['nombre']),
+          onPressed:
+              () => _confirmarEliminar(servicio['id'], servicio['nombre']),
           child: const Text('ELIMINAR', style: TextStyle(color: Colors.red)),
         ),
       ],
