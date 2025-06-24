@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../../services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocacionScreen extends StatefulWidget {
   const LocacionScreen({super.key});
@@ -50,11 +54,81 @@ class _LocacionScreenState extends State<LocacionScreen> {
     super.dispose();
   }
 
-  void _setLocation() {
-    if (_formKey.currentState!.validate()) {
-      // quiero la API, servidor a la nube gaaaaaa
+  // void _setLocation() {
+  //   if (_formKey.currentState!.validate()) {
+  //     // quiero la API, servidor a la nube gaaaaaa
+
+  //   }
+  // }
+
+  void _setLocation() async {
+  if (_formKey.currentState!.validate()) {
+    final Map<String, String> _locationTypeMap = {
+      'Salón': 'salon',
+      'Jardín': 'jardin',
+      'Playa': 'playa',
+      'Auditorio': 'auditorio',
+      'Terraza': 'terraza',
+      'Otro': 'otro',
+    };
+
+    final Map<String, String> _priceUnitMap = {
+      'Por Evento': 'event',
+      'Por Hora': 'hour',
+      'Por Día': 'day',
+    };
+
+    final Map<String, String> _environmentTypeMap = {
+      'Cerrado': 'cerrado',
+      'Abierto': 'abierto',
+      'Semiabierto': 'semiabierto',
+    };
+
+    final Map<String, dynamic> data = {
+      'name': _nameLocationController.text,
+      'description': _descriptionController.text,
+      'address': _addressController.text,
+      'location_type': _locationTypeMap[_locationTypeSelecte] ?? '',
+      'environment_type': _environmentTypeMap[_environmentTypeSelected] ?? '',
+      'capacity': int.tryParse(_capacityController.text) ?? 0,
+      'area_sqm': int.tryParse(_areaController.text) ?? 0,
+      'parking_spaces': int.tryParse(_parkingSpaceController.text) ?? 0,
+      'rental_price': double.tryParse(_rentalPriceController.text) ?? 0,
+      'price_unit': _priceUnitMap[_priceUnitSelected] ?? '',
+      'extra_hour_cost': double.tryParse(_extraHourCostController.text) ?? 0,
+      'provider': _providerController.text,
+    };
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token') ?? '';
+      final response = await http.post(
+        Uri.parse('${baseUrl}locations/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token', // Reemplaza con tu JWT si aplica
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Locación guardada con éxito')),
+        );
+        Navigator.pop(context); // o navega a otra pantalla
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error de red: $e')),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
